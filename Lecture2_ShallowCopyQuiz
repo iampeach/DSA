@@ -6,10 +6,10 @@ class student{
         student(int n = 3){
             count = n;
             score = new int [count];
-        };
+        }
         ~student(){
             delete [] score;
-        };
+        }
         int *score, count;
         string name;
 };
