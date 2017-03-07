@@ -1,0 +1,54 @@
+#include <iostream>
+#include <algorithm>
+#include <climits>
+#include <cmath>
+#include <cstdio>
+
+using namespace std;
+
+int getMid(int num1, int num2){
+    return num1 + (num2 - num1) / 2;
+}
+
+int constructST(int arr[], int sStart, int sEnd, int *sTree, int sIndex){
+    if (sStart == sEnd){
+        sTree[sIndex] = arr[sStart];
+        return arr[sStart];
+    }
+    else{
+        int mid = getMid(sStart, sEnd);
+        sTree[sIndex] = max(constructST(arr, sStart, mid, sTree, sIndex * 2 + 1), 
+                            constructST(arr, mid + 1, sEnd, sTree, sIndex * 2 + 2));
+        return sTree[sIndex];
+    }
+}
+
+int findMax(int *sTree, int sStart, int sEnd, int qStart, int qEnd, int index){
+    if (qStart <= sStart && qEnd >= sEnd){
+        return sTree[index];
+    }
+    else if (sStart > qEnd || sEnd < qStart){
+        return INT_MIN;
+    }
+    int mid = getMid(sStart, sEnd);
+    return max(findMax(sTree, sStart, mid, qStart, qEnd, index * 2 + 1),
+               findMax(sTree, mid + 1, sEnd, qStart, qEnd, index * 2 + 2));
+}
+
+int main(){
+    int arrLength, tests;
+    //cin >> arrLength >> tests; 
+    scanf("%d %d", &arrLength, &tests);
+    int arr[arrLength];
+    for (int i = 0; i < arrLength; ++i){
+        cin >> arr[i];
+    }
+    int *sTree = new int[2 * (int)pow(2, (int)(ceil(log2(arrLength)))) - 1];
+    constructST(arr, 0, arrLength-1, sTree, 0);
+    for (int i = 0; i < tests; ++i){
+        int qStart, qEnd;
+        //cin >> qStart >> qEnd;
+        scanf("%d %d", &qStart, &qEnd);
+        cout << findMax(sTree, 0, arrLength-1, qStart - 1, qEnd - 1, 0) << endl;
+    }
+}
